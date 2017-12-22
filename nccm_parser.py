@@ -10,6 +10,7 @@ CANTEENS = ["August Krogh"]
 PAGE_URLS = ["http://www1.bio.ku.dk/akb/kantine/menuoversigt/"]
 # PAGE_URLS = ["http://www.biocenter.ku.dk/kantine/menuoversigt/"]
 # TODO: Add terminal interface
+TODAY = datetime.date.today().weekday()
 
 class MyHTMLParser(HTMLParser):
     lst = []
@@ -35,31 +36,6 @@ def get_for_a_day(date, dishes):
 def get_for_a_canteen(canteen, dishes):
     return [x for x in dishes if (x.canteen == canteen)]
 
-
-r = requests.get(PAGE_URLS[0])
-parser = MyHTMLParser()
-page = r.text
-# print(page)
-# page = ""
-# dishes = []
-# with open(ADRESS, 'r') as myfile:
-#     page=myfile.read()
-page=re.findall("^.*tr height=.*$",page,re.MULTILINE)
-page = "\n".join(page)
-
-parser.feed(page)
-var = parser.get_list()
-lst = []
-
-for j in range(5):
-    date = re.match(r"(.*) (.*) - (.*)", var.pop(0), flags=0).group(3)
-    dish_type = re.match(r"(.*) (.*)", var.pop(0), flags=0).group(1)
-    dish_name = var.pop(0)
-    lst.append(Dish(dish_type, dish_name, date, "August Krogh"))
-    dish_type = re.match(r"(.*) (.*):", var.pop(0), flags=0).group(1)
-    dish_name = var.pop(0)
-    lst.append(Dish(dish_type, dish_name, date, "August Krogh"))
-
 def print_for_day(day,lst):
     dishes = get_for_a_day(lst,day)
     print(dishes[0].date)
@@ -79,5 +55,32 @@ def print_for_today(dishes):
     weekday = WEEKDAYS[datetime.date.today().weekday()]
     print_for_day(dishes,weekday)
 
-# print_for_week(lst)
-print_for_today(lst)
+r = requests.get(PAGE_URLS[0])
+parser = MyHTMLParser()
+page = r.text
+# print(page)
+# page = ""
+# dishes = []
+# with open(ADRESS, 'r') as myfile:
+#     page=myfile.read()
+page=re.findall("^.*tr height=.*$",page,re.MULTILINE)
+page = "\n".join(page)
+parser.feed(page)
+var = parser.get_list()
+
+if len(var) < 25:
+    print("ABORTED, menu inclomlete")
+elif TODAY > 4:
+    print("ABORTED, the canteens are closed today!")
+else:
+    lst = []
+    for j in range(5):
+        date = re.match(r"(.*) (.*) - (.*)", var.pop(0), flags=0).group(3)
+        dish_type = re.match(r"(.*) (.*)", var.pop(0), flags=0).group(1)
+        dish_name = var.pop(0)
+        lst.append(Dish(dish_type, dish_name, date, "August Krogh"))
+        dish_type = re.match(r"(.*) (.*):", var.pop(0), flags=0).group(1)
+        dish_name = var.pop(0)
+        lst.append(Dish(dish_type, dish_name, date, "August Krogh"))
+    # print_for_week(lst)
+    print_for_today(lst)

@@ -1,17 +1,20 @@
 from html.parser import HTMLParser
 import datetime
 import re
+import requests
 
 # TODO: Add support of multiple canteens
 ADRESS="./page.html"
 WEEKDAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"]
 CANTEENS = ["August Krogh"]
+PAGE_URLS = ["http://www1.bio.ku.dk/akb/kantine/menuoversigt/"]
+# PAGE_URLS = ["http://www.biocenter.ku.dk/kantine/menuoversigt/"]
 # TODO: Add terminal interface
 
 class MyHTMLParser(HTMLParser):
     lst = []
     def handle_data(self, data):
-        if data not in ["\n",'\xa0']:
+        if data not in ["\n",'\xa0',"\r","\r\n"]:
             self.lst.append(data.replace('\xa0', ''))
     def get_list(self):
         return self.lst
@@ -32,15 +35,22 @@ def get_for_a_day(date, dishes):
 def get_for_a_canteen(canteen, dishes):
     return [x for x in dishes if (x.canteen == canteen)]
 
+
+r = requests.get(PAGE_URLS[0])
 parser = MyHTMLParser()
-page = ""
-dishes = []
-with open(ADRESS, 'r') as myfile:
-    page=myfile.read()
+page = r.text
+# print(page)
+# page = ""
+# dishes = []
+# with open(ADRESS, 'r') as myfile:
+#     page=myfile.read()
+page=re.findall("^.*tr height=.*$",page,re.MULTILINE)
+page = "\n".join(page)
 
 parser.feed(page)
 var = parser.get_list()
 lst = []
+
 for j in range(5):
     date = re.match(r"(.*) (.*) - (.*)", var.pop(0), flags=0).group(3)
     dish_type = re.match(r"(.*) (.*)", var.pop(0), flags=0).group(1)

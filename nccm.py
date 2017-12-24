@@ -11,7 +11,8 @@ PAGE_URLS = ["http://www.biocenter.ku.dk/kantine/menuoversigt/",
 # TODAY = datetime.date.today().weekday() - 3
 TODAY = datetime.date.today().weekday()
 # TODO Add support for printing tables
-# TODO Add error handlers
+# TODO Add parser abstraction so multiple types of tables could be supported
+# TODO Finish exception handling
 
 class MyHTMLParser(HTMLParser):
     lst = []
@@ -47,14 +48,16 @@ def print_for_day(day,lst):
             print(str(dish))
 
 def print_for_week(dishes):
-    print("Week menu:")
-    for day in WEEKDAYS:
-        print_for_day(dishes, day)
+    if len(dishes)>1:
+        print("Week menu:")
+        for day in WEEKDAYS:
+            print_for_day(dishes, day)
 
 def print_for_today(dishes):
-    print("Menu for today:")
-    weekday = WEEKDAYS[TODAY]
-    print_for_day(dishes,weekday)
+    if len(dishes)>1:
+        print("Menu for today:")
+        weekday = WEEKDAYS[TODAY]
+        print_for_day(dishes,weekday)
 
 def load_list_for_canteen(url, pool, canteen_name):
     parser = MyHTMLParser()
@@ -62,25 +65,29 @@ def load_list_for_canteen(url, pool, canteen_name):
     page = "\n".join(re.findall("^.*tr height=.*$", r.text, re.MULTILINE))
     # page = ""
     # with open('test1.html', 'r') as myfile:
-    #     page = myfile.read()
-    parser.feed(page)
-    var = parser.get_list()
-    if len(var) < 25:
-        print("ABORTED, " + canteen_name + " - menu inclomlete")
-    else:
-        for j in range(5):
-            date = re.match(r"(.*) (.*) - (.*)", var.pop(0), flags=0).group(3)
-            dish_type = re.match(r"(.*) (.*)", var.pop(0), flags=0).group(1)
-            dish_name = var.pop(0)
-            pool.append(Dish(dish_type, dish_name, date, canteen_name))
-            dish_type = re.match(r"(.*) (.*):", var.pop(0), flags=0).group(1)
-            dish_name = var.pop(0)
-            pool.append(Dish(dish_type, dish_name, date, canteen_name))
+    # #     page = myfile.read()
+    # parser.feed(page)
+    # var = parser.get_list()
+    for j in range(5):
+        date = re.match(r"(.*) (.*) - (.*)", var.pop(0), flags=0).group(3)
+        dish_type = re.match(r"(.*) (.*)", var.pop(0), flags=0).group(1)
+        dish_name = var.pop(0)
+        pool.append(Dish(dish_type, dish_name, date, canteen_name))
+        dish_type = re.match(r"(.*) (.*):", var.pop(0), flags=0).group(1)
+        dish_name = var.pop(0)
+        pool.append(Dish(dish_type, dish_name, date, canteen_name))
 
 def load_all():
     pool = []
     for nr in range(len(CANTEEN_NAMES)):
-        load_list_for_canteen(PAGE_URLS[nr], pool, CANTEEN_NAMES[nr])
+        try:
+            load_list_for_canteen(PAGE_URLS[nr], pool, CANTEEN_NAMES[nr])
+        except AttributeError:
+            print("Loading for " + CANTEEN_NAMES[nr] + " failed")
+            break
+        except NameError:
+            print("Loading for " + CANTEEN_NAMES[nr] + " failed")
+            break
     return pool
 
 parser = argparse.ArgumentParser()
@@ -94,5 +101,8 @@ args = parser.parse_args()
 if args.week:
     print_for_week(load_all())
 else:
-    print_for_today(load_all())
+    if TODAY > 4:
+        print("Nothing to load, the canteens are closed for today")
+    else:
+        print_for_today(load_all())
 # TODO add support for choosing canteens and days

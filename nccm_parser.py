@@ -55,10 +55,10 @@ def print_for_today(dishes):
     print_for_day(dishes,weekday)
 
 def load_list_for_canteen(url, pool, canteen_name):
-    # r = requests.get(url)
+    r = requests.get(url)
     parser = MyHTMLParser()
-    # page = "\n".join(re.findall("^.*tr height=.*$", r.text, re.MULTILINE))
-    page = ""
+    page = "\n".join(re.findall("^.*tr height=.*$", r.text, re.MULTILINE))
+    # page = ""
     with open('test1.html', 'r') as myfile:
         page = myfile.read()
     parser.feed(page)

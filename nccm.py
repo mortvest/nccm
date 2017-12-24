@@ -8,8 +8,8 @@ WEEKDAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"]
 CANTEEN_NAMES = ["Biocenter", "August Krogh"]
 PAGE_URLS = ["http://www.biocenter.ku.dk/kantine/menuoversigt/",
              "http://www1.bio.ku.dk/akb/kantine/menuoversigt/"]
-TODAY = datetime.date.today().weekday() - 3
-# TODAY = datetime.date.today().weekday()
+# TODAY = datetime.date.today().weekday() - 3
+TODAY = datetime.date.today().weekday()
 # TODO Add support for printing tables
 # TODO Add error handlers
 

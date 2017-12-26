@@ -3,4 +3,9 @@ North Campus (University of Copenhagen) canteen menu aggregator
 ## Requirements
 python3.6
 ## Usage
-python3 nccm.py [-t | -w]
+nccm.py [-h] [-w | -t]
+
+optional arguments:
+  -w, --week   show menu for week and exit
+  -t, --today  show menu for today and exit (default)
+  -h, --help   show help and exit

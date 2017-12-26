@@ -5,6 +5,6 @@ python3.6
 ## Usage
 nccm.py [-h] [-w | -t]
 ### Optional arguments:
-..* -⋅w, --week   show menu for week and exit
-..* -t, --today  show menu for today and exit (default)
-..* -h, --help   show help and exit
+* -⋅w, --week   show menu for week and exit
+* -t, --today  show menu for today and exit (default)
+* -h, --help   show help and exit

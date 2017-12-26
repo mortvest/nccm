@@ -1,36 +1,13 @@
-from html.parser import HTMLParser
 import datetime
-import re
-import requests
 import argparse
-
-WEEKDAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"]
-CANTEEN_NAMES = ["Biocenter", "August Krogh"]
-PAGE_URLS = ["http://www.biocenter.ku.dk/kantine/menuoversigt/",
-             "http://www1.bio.ku.dk/akb/kantine/menuoversigt/"]
-# TODAY = datetime.date.today().weekday() - 3
-TODAY = datetime.date.today().weekday()
+from canteen import *
 # TODO Add support for printing tables
-# TODO Add parser abstraction so multiple types of tables could be supported
 # TODO Finish exception handling
 
-class MyHTMLParser(HTMLParser):
-    lst = []
-    def handle_data(self, data):
-        if data not in ["\n",'\xa0',"\r","\r\n"]:
-            self.lst.append(data.replace('\xa0', ''))
-    def get_list(self):
-        return self.lst
-
-class Dish:
-    def __init__(self, dish_type, dish_name, date, canteen):
-        self.dish_type = dish_type
-        self.dish_name = dish_name
-        self.date = date
-        self.canteen = canteen
-    def __str__ (self):
-        return ((4 - len(self.dish_type))*" " + self.dish_type + " ret: " + self.dish_name)
-        # return (self.dish_name)
+WEEKDAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"]
+TODAY = datetime.date.today().weekday()
+CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
+                BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/")]
 
 def get_for_a_day(date, dishes):
     return [x for x in dishes if (x.date == date)]
@@ -41,8 +18,8 @@ def get_for_a_canteen(canteen, dishes):
 def print_for_day(day,lst):
     dishes = get_for_a_day(lst,day)
     print("* " + dishes[0].date)
-    for canteen in CANTEEN_NAMES:
-        foo = get_for_a_canteen(canteen, dishes)
+    for canteen in CANTEEN_LIST:
+        foo = get_for_a_canteen(canteen.name, dishes)
         print("** " + foo[0].canteen)
         for dish in foo:
             print(str(dish))
@@ -59,50 +36,28 @@ def print_for_today(dishes):
         weekday = WEEKDAYS[TODAY]
         print_for_day(dishes,weekday)
 
-def load_list_for_canteen(url, pool, canteen_name):
-    parser = MyHTMLParser()
-    r = requests.get(url)
-    page = "\n".join(re.findall("^.*tr height=.*$", r.text, re.MULTILINE))
-    # page = ""
-    # with open('test1.html', 'r') as myfile:
-    # #     page = myfile.read()
-    # parser.feed(page)
-    # var = parser.get_list()
-    for j in range(5):
-        date = re.match(r"(.*) (.*) - (.*)", var.pop(0), flags=0).group(3)
-        dish_type = re.match(r"(.*) (.*)", var.pop(0), flags=0).group(1)
-        dish_name = var.pop(0)
-        pool.append(Dish(dish_type, dish_name, date, canteen_name))
-        dish_type = re.match(r"(.*) (.*):", var.pop(0), flags=0).group(1)
-        dish_name = var.pop(0)
-        pool.append(Dish(dish_type, dish_name, date, canteen_name))
-
-def load_all():
+def load_all(canteen_list):
     pool = []
-    for nr in range(len(CANTEEN_NAMES)):
+    for canteen in canteen_list:
         try:
-            load_list_for_canteen(PAGE_URLS[nr], pool, CANTEEN_NAMES[nr])
-        except AttributeError:
-            print("Loading for " + CANTEEN_NAMES[nr] + " failed")
-            break
-        except NameError:
-            print("Loading for " + CANTEEN_NAMES[nr] + " failed")
-            break
+            canteen.fill_pool(pool)
+        except:
+            print("Failed loading menu from " + canteen.name)
     return pool
 
-parser = argparse.ArgumentParser()
-group = parser.add_mutually_exclusive_group()
-group.add_argument("-w", "--week", help="show menu for week and exit",
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("-w", "--week", help="show menu for week and exit",
                     action="store_true")
-group.add_argument("-t", "--today", help="show menu for today and exit (default)",
-                   action="store_true")
-
-args = parser.parse_args()
-if args.week:
-    print_for_week(load_all())
-else:
-    if TODAY > 4:
-        print("Nothing to load, the canteens are closed for today")
+    group.add_argument("-t", "--today", help="show menu for today and exit (default)",
+                    action="store_true")
+    args = parser.parse_args()
+    if args.week:
+        print_for_week(load_all(CANTEEN_LIST))
     else:
-        print_for_today(load_all())
-# TODO add support for choosing canteens and days
+        if TODAY > 4:
+            print("Nothing to load, the canteens are closed for today")
+        else:
+            print_for_today(load_all())
+    # TODO add support for choosing canteens and days

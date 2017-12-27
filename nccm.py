@@ -59,5 +59,5 @@ if __name__ == "__main__":
         if TODAY > 4:
             print("Nothing to load, the canteens are closed for today")
         else:
-            print_for_today(load_all())
+            print_for_today(load_all(CANTEEN_LIST))
     # TODO add support for choosing canteens and days

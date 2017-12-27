@@ -9,32 +9,32 @@ TODAY = datetime.date.today().weekday()
 CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
                 BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/")]
 
-def get_for_a_day(date, dishes):
-    return [x for x in dishes if (x.date == date)]
+def get_for_a_day(date, items):
+    return [x for x in items if (x.date == date)]
 
-def get_for_a_canteen(canteen, dishes):
-    return [x for x in dishes if (x.canteen == canteen)]
+def get_for_a_canteen(canteen, items):
+    return [x for x in items if (x.canteen == canteen)]
 
 def print_for_day(day,lst):
-    dishes = get_for_a_day(lst,day)
-    print("* " + dishes[0].date)
+    items = get_for_a_day(lst,day)
+    print("* " + items[0].date)
     for canteen in CANTEEN_LIST:
-        foo = get_for_a_canteen(canteen.name, dishes)
+        foo = get_for_a_canteen(canteen.name, items)
         print("** " + foo[0].canteen)
-        for dish in foo:
-            print(str(dish))
+        for item in foo:
+            print(str(item))
 
-def print_for_week(dishes):
-    if len(dishes)>1:
+def print_for_week(items):
+    if len(items)>1:
         print("Week menu:")
         for day in WEEKDAYS:
-            print_for_day(dishes, day)
+            print_for_day(items, day)
 
-def print_for_today(dishes):
-    if len(dishes)>1:
+def print_for_today(items):
+    if len(items)>1:
         print("Menu for today:")
         weekday = WEEKDAYS[TODAY]
-        print_for_day(dishes,weekday)
+        print_for_day(items,weekday)
 
 def load_all(canteen_list):
     pool = []

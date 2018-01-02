@@ -9,8 +9,8 @@ class MenuItem:
         self.date = date
         self.canteen = canteen
     def __str__ (self):
-        return ((4 - len(self.item_type))*" " + self.item_type + " ret: " + self.item_name)
-        # return (self.item_name)
+        # return ("*** " + (4 - len(self.item_type))*" " + self.item_type + " ret: " + self.item_name)
+        return ("    " + self.item_type + (4 - len(self.item_type))*" " + " ret: " + self.item_name)
 
 # TODO: static field??
 class MyHTMLParser(HTMLParser):

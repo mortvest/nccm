@@ -3,10 +3,10 @@ North Campus (University of Copenhagen) canteen menu aggregator
 ## Requirements
 python3.6 (should work out of the box)
 ### Python libraries
-requests
-re
-html.parser
-datetime
+* requests
+* re
+* html.parser
+* datetime
 ## Usage
 python nccm.py [-h] [-w | -t] [-c]
 ### optional arguments:

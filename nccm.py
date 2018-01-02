@@ -1,9 +1,8 @@
 import datetime
 import argparse
 from canteen import *
-# TODO Add support for printing tables
-# TODO Finish exception handling
 
+# TODO Add support for printing tables
 WEEKDAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"]
 TODAY = datetime.date.today().weekday()
 CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
@@ -15,35 +14,38 @@ def get_for_a_day(date, items):
 def get_for_a_canteen(canteen, items):
     return [x for x in items if (x.canteen == canteen)]
 
-def print_for_day(day,lst):
+def print_for_day(day,lst,canteen_list):
     items = get_for_a_day(lst,day)
     print("* " + items[0].date)
-    for canteen in CANTEEN_LIST:
+    for canteen in canteen_list:
         foo = get_for_a_canteen(canteen.name, items)
         print("** " + foo[0].canteen)
         for item in foo:
             print(str(item))
 
-def print_for_week(items):
+def print_for_week(items,canteen_list):
     if len(items)>1:
         print("Week menu:")
         for day in WEEKDAYS:
-            print_for_day(items, day)
+            print_for_day(items, day,canteen_list)
 
-def print_for_today(items):
+def print_for_today(items, canteen_list):
     if len(items)>1:
         print("Menu for today:")
         weekday = WEEKDAYS[TODAY]
-        print_for_day(items,weekday)
+        print_for_day(items,weekday, canteen_list)
 
 def load_all(canteen_list):
     pool = []
+    active_canteens = []
     for canteen in canteen_list:
         try:
             canteen.fill_pool(pool)
+            active_canteens.append(canteen)
+            print("Successfully loaded from " + canteen.name)
         except:
             print("Failed loading menu from " + canteen.name)
-    return pool
+    return (pool, active_canteens)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -54,10 +56,12 @@ if __name__ == "__main__":
                     action="store_true")
     args = parser.parse_args()
     if args.week:
-        print_for_week(load_all(CANTEEN_LIST))
+        pool, active_canteens = load_all(CANTEEN_LIST)
+        print_for_week(pool, active_canteens)
     else:
         if TODAY > 4:
             print("Nothing to load, the canteens are closed for today")
         else:
-            print_for_today(load_all(CANTEEN_LIST))
+            pool, active_canteens = load_all(CANTEEN_LIST)
+            print_for_today(pool, active_canteens)
     # TODO add support for choosing canteens and days

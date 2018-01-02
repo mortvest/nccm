@@ -8,6 +8,16 @@ TODAY = datetime.date.today().weekday()
 CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
                 BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/")]
 
+LOGO = ("""\
+
+███╗   ██╗ ██████╗ ██████╗███╗   ███╗
+████╗  ██║██╔════╝██╔════╝████╗ ████║
+██╔██╗ ██║██║     ██║     ██╔████╔██║
+██║╚██╗██║██║     ██║     ██║╚██╔╝██║
+██║ ╚████║╚██████╗╚██████╗██║ ╚═╝ ██║
+╚═╝  ╚═══╝ ╚═════╝ ╚═════╝╚═╝     ╚═╝
+""")
+
 def get_for_a_day(date, items):
     return [x for x in items if (x.date == date)]
 
@@ -54,7 +64,11 @@ if __name__ == "__main__":
                     action="store_true")
     group.add_argument("-t", "--today", help="show menu for today and exit (default)",
                     action="store_true")
+    parser.add_argument("-c", "--clean", help="dont show the logo",
+                    action="store_true")
     args = parser.parse_args()
+    if  not args.clean:
+        print(LOGO)
     if args.week:
         pool, active_canteens = load_all(CANTEEN_LIST)
         print_for_week(pool, active_canteens)

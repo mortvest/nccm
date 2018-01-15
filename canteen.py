@@ -12,14 +12,16 @@ class MenuItem:
         # return ("*** " + (4 - len(self.item_type))*" " + self.item_type + " ret: " + self.item_name)
         return ("    " + self.item_type + (4 - len(self.item_type))*" " + " ret: " + self.item_name)
 
-# TODO: static field??
 class MyHTMLParser(HTMLParser):
     lst = []
     def handle_data(self, data):
         if data not in ["\n",'\xa0',"\r","\r\n"]:
             self.lst.append(data.replace('\xa0', ''))
     def get_list(self):
-        return self.lst
+        new_lst = self.lst.copy()
+        # print(new_lst)
+        MyHTMLParser.lst = []
+        return new_lst
 
 class Canteen():
     def __init__(self, name, url):

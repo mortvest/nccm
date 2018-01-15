@@ -53,10 +53,13 @@ def load_all(canteen_list):
         try:
             canteen.fill_pool(pool)
             active_canteens.append(canteen)
-            print ("Loading from " + canteen.name + (max_name_len - len(canteen.name)) * " " + ": success")
+            if not args.clean:
+                print ("Loading from " + canteen.name + (max_name_len - len(canteen.name)) * " " + ": success")
         except:
-            print ("Loading from " + canteen.name + (max_name_len - len(canteen.name)) * " " + ": failed")
-    print("")
+            if not args.clean:
+                print ("Loading from " + canteen.name + (max_name_len - len(canteen.name)) * " " + ": failed")
+    if not args.clean:
+        print("")
     return (pool, active_canteens)
 
 if __name__ == "__main__":

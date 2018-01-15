@@ -69,7 +69,7 @@ if __name__ == "__main__":
                     action="store_true")
     group.add_argument("-t", "--today", help="show menu for today and exit (default)",
                     action="store_true")
-    parser.add_argument("-c", "--clean", help="dont show the logo",
+    parser.add_argument("-c", "--clean", help="reduce the amount of printing to minimum",
                     action="store_true")
     args = parser.parse_args()
     if  not args.clean:

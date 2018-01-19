@@ -34,7 +34,7 @@ def print_for_day(day,lst,canteen_list):
             print(str(item))
 
 def print_for_week(items,canteen_list):
-    if len(items)>1:
+    if len(items) > 1:
         print("MENU FOR WEEK " + str(datetime.date.today().isocalendar()[1]))
         for day in WEEKDAYS:
             print_for_day(items, day,canteen_list)

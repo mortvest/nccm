@@ -13,4 +13,4 @@ python nccm.py [-h] [-w | -t] [-c]
 * -w, (--week):   show menu for week and exit
 * -t, (--today):  show menu for today and exit (default)
 * -h, (--help):   show help and exit
-* -c, (--clean):  reduce the amount of printing to minimum
+* -c, (--clean):  reduce the amount of printing

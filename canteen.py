@@ -33,7 +33,7 @@ class Canteen():
 
 class BioCanteen(Canteen):
     def repair(self, foo):
-        if foo == "Lun ret:" or re.search(r".*Uge [1-9][0-9].*", foo):
+        if foo == "Lun ret:" or re.search(r"Uge [1-9].*", foo):
             return ["", foo]
         else:
             return [foo]

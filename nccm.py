@@ -26,12 +26,13 @@ def get_for_a_canteen(canteen, items):
 
 def print_for_day(day,lst,canteen_list):
     items = get_for_a_day(lst,day)
-    print(items[0].date)
-    for canteen in canteen_list:
-        foo = get_for_a_canteen(canteen.name, items)
-        print("  " + foo[0].canteen)
-        for item in foo:
-            print(str(item))
+    if len(items) > 0:
+        print(items[0].date)
+        for canteen in canteen_list:
+            foo = get_for_a_canteen(canteen.name, items)
+            print("  " + foo[0].canteen)
+            for item in foo:
+                print(str(item))
 
 def print_for_week(items,canteen_list):
     if len(items) > 1:
@@ -60,6 +61,7 @@ def load_all(canteen_list):
                 print ("Loading from " + canteen.name + (max_name_len - len(canteen.name)) * " " + ": failed")
     if not args.clean:
         print("")
+    # print([str(x) for x in pool])
     return (pool, active_canteens)
 
 if __name__ == "__main__":
@@ -72,7 +74,7 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--clean", help="reduce the amount of printing to minimum",
                     action="store_true")
     args = parser.parse_args()
-    if  not args.clean:
+    if not args.clean:
         print(LOGO)
     if args.week:
         pool, active_canteens = load_all(CANTEEN_LIST)

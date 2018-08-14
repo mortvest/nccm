@@ -32,21 +32,28 @@ class Canteen():
         pass
 
 class BioCanteen(Canteen):
+    def repair(self, foo):
+        if foo == "Lun ret:" or re.search(r".*Uge [1-9][0-9].*", foo):
+            return ["", foo]
+        else:
+            return [foo]
+
     def fill_pool(self, pool):
         html_parser = MyHTMLParser()
         r = requests.get(self.url)
         page = "\n".join(re.findall("^.*tr height=.*$", r.text, re.MULTILINE))
-        # page = ""
-        # with open('test1.html', 'r') as myfile:
-        #     page = myfile.read()
+        # with open('test_fail.html', 'r') as myfile:
+        #     page = "\n".join(re.findall("^.*tr height=.*$", myfile.read(), re.MULTILINE))
         html_parser.feed(page)
         lst = html_parser.get_list()
         num_days = 5
         for j in range(num_days):
-            date = re.match(r"(.*) (.*) - (.*)", lst.pop(0), flags=0).group(3)
-            item_type = re.match(r"(.*) (.*)", lst.pop(0), flags=0).group(1)
+            date = re.match(r"(Uge.*) (.*) - (.*)", lst.pop(0), flags=0).group(3)
+            lst.pop(0)
+            lst = self.repair(lst.pop(0)) + lst
             item_name = lst.pop(0)
-            pool.append(MenuItem(item_type, item_name, date, self.name))
-            item_type = re.match(r"(.*) (.*):", lst.pop(0), flags=0).group(1)
+            pool.append(MenuItem("Varm", item_name, date, self.name))
+            lst.pop(0)
+            lst = self.repair(lst.pop(0)) + lst
             item_name = lst.pop(0)
-            pool.append(MenuItem(item_type, item_name, date, self.name))
+            pool.append(MenuItem("Lun", item_name, date, self.name))

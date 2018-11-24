@@ -1,7 +1,7 @@
 # nccm
 KU North Campus (University of Copenhagen) Canteen Menu aggregator
 ## Requirements
-python3.6 (should work out of the box)
+python3 (should work out of the box)
 ### Python libraries
 * requests
 * html.parser

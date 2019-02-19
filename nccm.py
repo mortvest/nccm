@@ -29,9 +29,9 @@ def print_for_day(day,lst,canteen_list):
     if len(items) > 0:
         print(items[0].date)
         for canteen in canteen_list:
-            foo = get_for_a_canteen(canteen.name, items)
-            print("  " + foo[0].canteen)
-            for item in foo:
+            cant_items = get_for_a_canteen(canteen.name, items)
+            print("  " + cant_items[0].canteen)
+            for item in cant_items:
                 print(str(item))
 
 def print_for_week(items,canteen_list):
@@ -41,7 +41,7 @@ def print_for_week(items,canteen_list):
             print_for_day(items, day,canteen_list)
 
 def print_for_today(items, canteen_list):
-    if len(items)>1:
+    if len(items) > 1:
         print("MENU FOR TODAY: " + str(datetime.date.today()))
         weekday = WEEKDAYS[TODAY]
         print_for_day(items,weekday, canteen_list)
@@ -51,17 +51,19 @@ def load_all(canteen_list):
     active_canteens = []
     max_name_len = max([len(x.name) for x in canteen_list])
     for canteen in canteen_list:
+        msg = "Loading from " + canteen.name + (max_name_len - len(canteen.name)) * " "
         try:
-            canteen.fill_pool(pool)
+            curr_lst = []
             active_canteens.append(canteen)
+            canteen.fill_pool(curr_lst)
             if not args.clean:
-                print ("Loading from " + canteen.name + (max_name_len - len(canteen.name)) * " " + ": success")
+                print (msg + ": success")
+            pool += curr_lst
         except:
             if not args.clean:
-                print ("Loading from " + canteen.name + (max_name_len - len(canteen.name)) * " " + ": failed")
+                print (msg + ": failed")
     if not args.clean:
         print("")
-    # print([str(x) for x in pool])
     return (pool, active_canteens)
 
 if __name__ == "__main__":

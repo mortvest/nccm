@@ -10,7 +10,7 @@ class MenuItem:
         self.canteen = canteen
     def __str__ (self):
         # return ("*** " + (4 - len(self.item_type))*" " + self.item_type + " ret: " + self.item_name)
-        return ("    " + self.item_type + (4 - len(self.item_type))*" " + " : " + self.item_name)
+        return ("    " + self.item_type[:-1] + (11 - len(self.item_type)) * " " + " : " + self.item_name)
 
 class MyHTMLParser(HTMLParser):
     lst = []

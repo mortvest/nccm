@@ -59,8 +59,10 @@ def load_all(canteen_list):
             if not args.clean:
                 print (msg + ": success")
             pool += curr_lst
-        except:
-            if not args.clean:
+        except Exception as exception:
+            if args.debug:
+                print(exception)
+            elif not args.clean:
                 print (msg + ": failed")
     if not args.clean:
         print("")
@@ -74,6 +76,8 @@ if __name__ == "__main__":
     group.add_argument("-t", "--today", help="show menu for today and exit (default)",
                     action="store_true")
     parser.add_argument("-c", "--clean", help="reduce the amount of printing to minimum",
+                    action="store_true")
+    parser.add_argument("-d", "--debug", help="print all error messages",
                     action="store_true")
     args = parser.parse_args()
     if not args.clean:

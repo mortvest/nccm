@@ -9,9 +9,10 @@ python3 (should work out of the box)
 ## Installation
 run install.sh (change the install path if needed)
 ## Usage
-python nccm.py [-h] [-w | -t] [-c]
+python nccm.py [-h] [-w | -t] [-c] [-d]
 ### optional arguments:
-* -w, (--week):   show menu for week and exit
-* -t, (--today):  show menu for today and exit (default)
-* -h, (--help):   show help and exit
-* -c, (--clean):  reduce the amount of printing
+  -h, --help   show this help message and exit
+  -w, --week   show menu for week and exit
+  -t, --today  show menu for today and exit (default)
+  -c, --clean  reduce the amount of printing to minimum
+  -d, --debug  print all error messages

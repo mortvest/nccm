@@ -5,6 +5,9 @@ python3 (should work out of the box)
 ### Python libraries
 * requests
 * html.parser
+* pyinstaller (for installation)
+## Installation
+run install.sh (change the install path if needed)
 ## Usage
 python nccm.py [-h] [-w | -t] [-c]
 ### optional arguments:

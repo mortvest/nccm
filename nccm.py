@@ -5,6 +5,8 @@ from canteen import *
 # TODO: Collect all the printing into a separate class
 # TODO: Add auto-indentation of the printing
 # TODO: Add support for printing of tables
+# TODO: Add logging (the proper way)
+# TODO: Add support for choosing canteens and days
 WEEKDAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"]
 TODAY = datetime.date.today().weekday()
 CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
@@ -18,33 +20,41 @@ LOGO = ("""\
 ██║ ╚████║╚██████╗╚██████╗██║ ╚═╝ ██║
 ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝╚═╝     ╚═╝""")
 
+def find_max_len(lst):
+    return max([len(x.item_type) for x in lst])
+
 def get_for_a_day(date, items):
     return [x for x in items if (x.date == date)]
 
 def get_for_a_canteen(canteen, items):
     return [x for x in items if (x.canteen == canteen)]
 
-def print_for_day(day,lst,canteen_list):
-    items = get_for_a_day(lst,day)
+def print_for_day(day, lst, canteen_list, max_len):
+    items = get_for_a_day(lst, day)
     if len(items) > 0:
         print(items[0].date)
         for canteen in canteen_list:
             cant_items = get_for_a_canteen(canteen.name, items)
             print("  " + cant_items[0].canteen)
             for item in cant_items:
-                print(str(item))
+                print("    " +
+                      item.item_type[:-1] +
+                      (max_len - len(item.item_type)) * " " +
+                      ": " + item.item_name)
 
-def print_for_week(items,canteen_list):
+def print_for_week(items, canteen_list):
     if len(items) > 1:
         print("MENU FOR WEEK " + str(datetime.date.today().isocalendar()[1]))
         for day in WEEKDAYS:
-            print_for_day(items, day,canteen_list)
+            max_len = find_max_len(items)
+            print_for_day(items, day, canteen_list, max_len)
 
 def print_for_today(items, canteen_list):
     if len(items) > 1:
         print("MENU FOR TODAY: " + str(datetime.date.today()))
         weekday = WEEKDAYS[TODAY]
-        print_for_day(items,weekday, canteen_list)
+        max_len = find_max_len(items)
+        print_for_day(items, weekday, canteen_list, max_len)
 
 def load_all(canteen_list):
     """ Load menu for all canteens in a list, returns a list of MenuItem"""
@@ -92,4 +102,3 @@ if __name__ == "__main__":
         else:
             pool, active_canteens = load_all(CANTEEN_LIST)
             print_for_today(pool, active_canteens)
-    # TODO add support for choosing canteens and days

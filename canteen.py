@@ -2,26 +2,18 @@ from html.parser import HTMLParser
 import requests
 import re
 
-ITEM_OFFSET = 11
-NUM_DAYS = 5
-
 class MenuItem:
     def __init__(self, item_type, item_name, date, canteen):
         self.item_type = item_type
         self.item_name = item_name
         self.date = date
         self.canteen = canteen
-    def __str__ (self):
-        return ("    " +
-                self.item_type[:-1] +
-                (ITEM_OFFSET - len(self.item_type)) * " " +
-                ": " + self.item_name)
 
 class MyHTMLParser(HTMLParser):
     lst = []
     def handle_data(self, data):
-        if data not in ["\n",'\xa0',"\r","\r\n"]:
-            self.lst.append(data.replace('\xa0', ''))
+        if data not in ["\n", "\xa0", "\r", "\r\n"]:
+            self.lst.append(data.replace("\xa0", ""))
     def get_list(self):
         new_lst = self.lst.copy()
         MyHTMLParser.lst = []
@@ -43,20 +35,20 @@ class BioCanteen(Canteen):
 
     def fill_pool(self, pool):
         html_parser = MyHTMLParser()
-        r = requests.get(self.url)
-        page = "\n".join(re.findall("^.*tr height=.*$", r.text, re.MULTILINE))
-        # print(page)
+        request = requests.get(self.url)
+        page = "\n".join(re.findall("^.*tr height=.*$", request.text, re.MULTILINE))
         # with open('bio_fail.html', 'r') as myfile:
         #     page = "\n".join(re.findall("^.*tr height=.*$", myfile.read(), re.MULTILINE))
         html_parser.feed(page)
         lst = html_parser.get_list()
-        while(lst):
+        while lst:
+            # pop the first item
             fst = lst.pop(0)
             try:
                 # is it a date?
                 maybe_date = re.match(r"(Uge.*) (.*) - (.*)", fst, flags=0).group(3)
                 date = maybe_date
             except:
-                # if not a date - add a menu item
+                # if not a date - append the first item to the start of the list
                 lst = [fst] + lst
                 self.__pop_item(lst, pool, date)

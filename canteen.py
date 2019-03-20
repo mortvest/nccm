@@ -45,13 +45,18 @@ class BioCanteen(Canteen):
         html_parser = MyHTMLParser()
         r = requests.get(self.url)
         page = "\n".join(re.findall("^.*tr height=.*$", r.text, re.MULTILINE))
+        # print(page)
         # with open('bio_fail.html', 'r') as myfile:
         #     page = "\n".join(re.findall("^.*tr height=.*$", myfile.read(), re.MULTILINE))
         html_parser.feed(page)
         lst = html_parser.get_list()
-        for j in range(NUM_DAYS):
-            date = re.match(r"(Uge.*) (.*) - (.*)", lst.pop(0), flags=0).group(3)
-            # first menu item
-            self.__pop_item(lst, pool, date)
-            # second menu item
-            self.__pop_item(lst, pool, date)
+        while(lst):
+            fst = lst.pop(0)
+            try:
+                # is it a date?
+                maybe_date = re.match(r"(Uge.*) (.*) - (.*)", fst, flags=0).group(3)
+                date = maybe_date
+            except:
+                # if not a date - add a menu item
+                lst = [fst] + lst
+                self.__pop_item(lst, pool, date)

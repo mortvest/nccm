@@ -47,6 +47,7 @@ def print_for_today(items, canteen_list):
         print_for_day(items,weekday, canteen_list)
 
 def load_all(canteen_list):
+    """ Load menu for all canteens in a list, returns a list of MenuItem"""
     pool = []
     active_canteens = []
     max_name_len = max([len(x.name) for x in canteen_list])

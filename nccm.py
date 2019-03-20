@@ -2,9 +2,6 @@ import datetime
 import argparse
 from canteen import *
 
-# TODO: Collect all the printing into a separate class
-# TODO: Add auto-indentation of the printing
-# TODO: Add support for printing of tables
 # TODO: Add logging (the proper way)
 # TODO: Add support for choosing canteens and days
 WEEKDAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"]
@@ -24,14 +21,14 @@ def find_max_len(lst):
     return max([len(x.item_type) for x in lst])
 
 def get_for_a_day(date, items):
-    return [x for x in items if (x.date == date)]
+    return [x for x in items if x.date == date]
 
 def get_for_a_canteen(canteen, items):
-    return [x for x in items if (x.canteen == canteen)]
+    return [x for x in items if x.canteen == canteen]
 
 def print_for_day(day, lst, canteen_list, max_len):
     items = get_for_a_day(lst, day)
-    if len(items) > 0:
+    if items:
         print(items[0].date)
         for canteen in canteen_list:
             cant_items = get_for_a_canteen(canteen.name, items)
@@ -74,7 +71,7 @@ def load_all(canteen_list):
             if args.debug:
                 print(exception)
             elif not args.clean:
-                print (msg + ": failed")
+                print(msg + ": failed")
     if not args.clean:
         print("")
     return (pool, active_canteens)
@@ -83,13 +80,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-w", "--week", help="show menu for week and exit",
-                    action="store_true")
+                       action="store_true")
     group.add_argument("-t", "--today", help="show menu for today and exit (default)",
-                    action="store_true")
+                       action="store_true")
     parser.add_argument("-c", "--clean", help="reduce the amount of printing to minimum",
-                    action="store_true")
+                        action="store_true")
     parser.add_argument("-d", "--debug", help="print all error messages",
-                    action="store_true")
+                        action="store_true")
     args = parser.parse_args()
     if not args.clean:
         print(LOGO)

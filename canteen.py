@@ -1,6 +1,6 @@
 from html.parser import HTMLParser
-import requests
 import re
+import requests
 
 class MenuItem:
     def __init__(self, item_type, item_name, date, canteen):
@@ -25,7 +25,7 @@ class Canteen():
         self.name = name
         self.url = url
     def fill_pool(self, pool):
-        """ Method for returning a list of menu items from a page """
+        """ Method for filling the list of menu items from a page """
 
 class BioCanteen(Canteen):
     def __pop_item(self, lst, pool, date):

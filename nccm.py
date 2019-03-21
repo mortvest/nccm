@@ -31,13 +31,17 @@ def print_for_day(day, lst, canteen_list, max_len):
     if items:
         print(items[0].date)
         for canteen in canteen_list:
-            cant_items = get_for_a_canteen(canteen.name, items)
-            print("  " + cant_items[0].canteen)
-            for item in cant_items:
-                print("    " +
-                      item.item_type[:-1] +
-                      (max_len - len(item.item_type)) * " " +
-                      ": " + item.item_name)
+            try:
+                cant_items = get_for_a_canteen(canteen.name, items)
+                print("  " + cant_items[0].canteen)
+                for item in cant_items:
+                    print("    " +
+                          item.item_type[:-1] +
+                          (max_len - len(item.item_type)) * " " +
+                          ": " + item.item_name)
+            except Exception as exception:
+                if args.debug:
+                    print(exception)
 
 def print_for_week(items, canteen_list):
     if len(items) > 1:

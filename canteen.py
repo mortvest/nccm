@@ -12,6 +12,7 @@ class MenuItem:
 class MyHTMLParser(HTMLParser):
     lst = []
     def handle_data(self, data):
+        """ Remove unused symbols """
         if data not in ["\n", "\xa0", "\r", "\r\n"]:
             self.lst.append(data.replace("\xa0", ""))
     def get_list(self):
@@ -29,8 +30,8 @@ class Canteen():
 
 class BioCanteen(Canteen):
     def __pop_item(self, lst, pool, date):
-        item_type = lst.pop(0)
-        item_name = lst.pop(0)
+        item_type = lst.pop()
+        item_name = lst.pop()
         pool.append(MenuItem(item_type, item_name, date, self.name))
 
     def fill_pool(self, pool):
@@ -40,15 +41,18 @@ class BioCanteen(Canteen):
         # with open('bio_fail.html', 'r') as myfile:
         #     page = "\n".join(re.findall("^.*tr height=.*$", myfile.read(), re.MULTILINE))
         html_parser.feed(page)
+        # lst = html_parser.get_list()
         lst = html_parser.get_list()
+        lst.reverse()
         while lst:
             # pop the first item
-            fst = lst.pop(0)
+            fst = lst.pop()
             try:
                 # is it a date?
                 maybe_date = re.match(r"(Uge.*) (.*) - (.*)", fst, flags=0).group(3)
                 date = maybe_date
             except:
-                # if not a date - append the first item to the start of the list
-                lst = [fst] + lst
+                # if not a date - append the first item back to the list
+                lst.append(fst)
                 self.__pop_item(lst, pool, date)
+        lst.reverse()

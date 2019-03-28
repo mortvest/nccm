@@ -1,13 +1,13 @@
 import datetime
 import argparse
+import config
 from canteen import *
 
 # TODO: Add logging (the proper way)
 # TODO: Add support for choosing canteens and days
-WEEKDAYS = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag"]
-TODAY = datetime.date.today().weekday()
 CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
-                BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/")]
+                BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/"),
+                HumCanteen("HUM", "https://hum.ku.dk/kontakt/gaest/kantinen/menuer/2019/hum/")]
 LOGO = ("""\
 
 ███╗   ██╗ ██████╗ ██████╗███╗   ███╗
@@ -17,45 +17,59 @@ LOGO = ("""\
 ██║ ╚████║╚██████╗╚██████╗██║ ╚═╝ ██║
 ╚═╝  ╚═══╝ ╚═════╝ ╚═════╝╚═╝     ╚═╝""")
 
+def shorten(string, max_len):
+    ellipsis = "..."
+    comb_len = max_len - len(ellipsis)
+    if len(string) <= max_len:
+        return string
+    else:
+        return string[:comb_len] + ellipsis
+
 def find_max_len(lst):
     return max([len(x.item_type) for x in lst])
 
-def get_for_a_day(date, items):
-    return [x for x in items if x.date == date]
+def get_for_a_day(weekday, items):
+    return [x for x in items if x.weekday == weekday]
 
 def get_for_a_canteen(canteen, items):
     return [x for x in items if x.canteen == canteen]
 
 def print_for_day(day, lst, canteen_list, max_len):
     items = get_for_a_day(lst, day)
+    acc = []
     if items:
-        print(items[0].date)
+        acc.append(items[0].weekday)
         for canteen in canteen_list:
             try:
                 cant_items = get_for_a_canteen(canteen.name, items)
-                print("  " + cant_items[0].canteen)
+                acc.append("  " + cant_items[0].canteen)
                 for item in cant_items:
-                    print("    " +
-                          item.item_type[:-1] +
-                          (max_len - len(item.item_type)) * " " +
-                          ": " + item.item_name)
+                    max_item_name = 80
+                    item_name = shorten(item.item_name, max_item_name)
+                    acc.append("    " +
+                               item.item_type +
+                               (max_len - len(item.item_type)) * " " +
+                               ": " + item_name)
             except Exception as exception:
                 if args.debug:
                     print(exception)
+    return "\n".join(acc)
 
 def print_for_week(items, canteen_list):
+    acc = []
     if len(items) > 1:
         print("MENU FOR WEEK " + str(datetime.date.today().isocalendar()[1]))
-        for day in WEEKDAYS:
+        for day in config.WEEKDAYS:
             max_len = find_max_len(items)
-            print_for_day(items, day, canteen_list, max_len)
+            acc.append(print_for_day(items, day, canteen_list, max_len))
+    return "\n".join(acc)
 
 def print_for_today(items, canteen_list):
     if len(items) > 1:
-        print("MENU FOR TODAY: " + str(datetime.date.today()))
-        weekday = WEEKDAYS[TODAY]
+        header = "MENU FOR TODAY: " + str(datetime.date.today())
+        weekday = config.WEEKDAYS[config.TODAY]
         max_len = find_max_len(items)
-        print_for_day(items, weekday, canteen_list, max_len)
+        return header + "\n" + print_for_day(items, weekday, canteen_list, max_len)
 
 def load_all(canteen_list):
     """ Load menu for all canteens in a list, returns a list of MenuItem"""
@@ -69,7 +83,7 @@ def load_all(canteen_list):
             active_canteens.append(canteen)
             canteen.fill_pool(curr_lst)
             if not args.clean:
-                print (msg + ": success")
+                print (msg + ": done")
             pool += curr_lst
         except Exception as exception:
             if args.debug:
@@ -79,6 +93,12 @@ def load_all(canteen_list):
     if not args.clean:
         print("")
     return (pool, active_canteens)
+
+
+def print_for_today_web():
+    pool_w, active_canteens_w = load_all(CANTEEN_LIST)
+    return print_for_today(pool_w, active_canteens_w)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -96,10 +116,10 @@ if __name__ == "__main__":
         print(LOGO)
     if args.week:
         pool, active_canteens = load_all(CANTEEN_LIST)
-        print_for_week(pool, active_canteens)
+        print(print_for_week(pool, active_canteens))
     else:
-        if TODAY > 4:
+        if config.TODAY > 4:
             print("Nothing to load, the canteens are closed for today")
         else:
             pool, active_canteens = load_all(CANTEEN_LIST)
-            print_for_today(pool, active_canteens)
+            print(print_for_today(pool, active_canteens))

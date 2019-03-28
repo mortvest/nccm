@@ -1,5 +1,5 @@
 # nccm
-KU North Campus (University of Copenhagen) Canteen Menu aggregator
+KU (University of Copenhagen) canteen menu aggregator
 ## Requirements
 python3 
 ### Python libraries

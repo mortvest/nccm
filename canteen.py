@@ -79,7 +79,7 @@ class HumCanteen(Canteen):
             read_pdf = PyPDF2.PdfFileReader(local_filename)
             page = read_pdf.getPage(0)
             content = page.extractText()
-        os.remove(local_filename)
+        # os.remove(local_filename)
         return content
 
     @staticmethod
@@ -91,6 +91,7 @@ class HumCanteen(Canteen):
         week_nr = datetime.date.today().isocalendar()[1]
         pdf_name = "HUM_Uge_{}.pdf".format(week_nr)
         content = self.__download_pdf(pdf_name)
+        print(content)
         replaced = re.sub("[\n\xa0\r]", "", content)
         item_names = list(re.match(self.__gen_regex(config.WEEKDAYS), replaced, flags=0).groups())
         for (weekday, item) in zip(config.WEEKDAYS, item_names):

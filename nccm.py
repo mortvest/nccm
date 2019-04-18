@@ -5,9 +5,12 @@ from canteen import *
 
 # TODO: Add logging (the proper way)
 # TODO: Add support for choosing canteens and days
+MAX_LINE = 80
+# CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
+#                 BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/"),
+#                 HumCanteen("HUM", "https://hum.ku.dk/kontakt/gaest/kantinen/menuer/2019/hum/")]
 CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
-                BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/"),
-                HumCanteen("HUM", "https://hum.ku.dk/kontakt/gaest/kantinen/menuer/2019/hum/")]
+                BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/")]
 LOGO = ("""\
 
 ███╗   ██╗ ██████╗ ██████╗███╗   ███╗
@@ -22,8 +25,7 @@ def shorten(string, max_len):
     comb_len = max_len - len(ellipsis)
     if len(string) <= max_len:
         return string
-    else:
-        return string[:comb_len] + ellipsis
+    return string[:comb_len] + ellipsis
 
 def find_max_len(lst):
     return max([len(x.item_type) for x in lst])
@@ -44,14 +46,14 @@ def print_for_day(day, lst, canteen_list, max_len):
                 cant_items = get_for_a_canteen(canteen.name, items)
                 acc.append("  " + cant_items[0].canteen)
                 for item in cant_items:
-                    max_item_name = 80
+                    max_item_name = MAX_LINE - max_len
                     item_name = shorten(item.item_name, max_item_name)
                     acc.append("    " +
                                item.item_type +
                                (max_len - len(item.item_type)) * " " +
                                ": " + item_name)
             except Exception as exception:
-                if args.debug:
+                if ARGS.debug:
                     print(exception)
     return "\n".join(acc)
 
@@ -70,6 +72,7 @@ def print_for_today(items, canteen_list):
         weekday = config.WEEKDAYS[config.TODAY]
         max_len = find_max_len(items)
         return header + "\n" + print_for_day(items, weekday, canteen_list, max_len)
+    return ""
 
 def load_all(canteen_list):
     """ Load menu for all canteens in a list, returns a list of MenuItem"""
@@ -82,18 +85,17 @@ def load_all(canteen_list):
             curr_lst = []
             active_canteens.append(canteen)
             canteen.fill_pool(curr_lst)
-            if not args.clean:
-                print (msg + ": done")
+            if not ARGS.clean:
+                print(msg + ": done")
             pool += curr_lst
         except Exception as exception:
-            if args.debug:
+            if ARGS.debug:
                 print(exception)
-            elif not args.clean:
+            elif not ARGS.clean:
                 print(msg + ": failed")
-    if not args.clean:
+    if not ARGS.clean:
         print("")
     return (pool, active_canteens)
-
 
 def print_for_today_web():
     pool_w, active_canteens_w = load_all(CANTEEN_LIST)
@@ -103,18 +105,26 @@ def print_for_today_web():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("-w", "--week", help="show menu for week and exit",
+    group.add_argument("-w",
+                       "--week",
+                       help="show menu for week and exit",
                        action="store_true")
-    group.add_argument("-t", "--today", help="show menu for today and exit (default)",
+    group.add_argument("-t",
+                       "--today",
+                       help="show menu for today and exit (default)",
                        action="store_true")
-    parser.add_argument("-c", "--clean", help="reduce the amount of printing to minimum",
+    parser.add_argument("-c",
+                        "--clean",
+                        help="reduce the amount of printing to minimum",
                         action="store_true")
-    parser.add_argument("-d", "--debug", help="print all error messages",
+    parser.add_argument("-d",
+                        "--debug",
+                        help="print all error messages",
                         action="store_true")
-    args = parser.parse_args()
-    if not args.clean:
+    ARGS = parser.parse_args()
+    if not ARGS.clean:
         print(LOGO)
-    if args.week:
+    if ARGS.week:
         pool, active_canteens = load_all(CANTEEN_LIST)
         print(print_for_week(pool, active_canteens))
     else:

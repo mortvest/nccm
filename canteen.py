@@ -40,8 +40,16 @@ class Canteen():
 
 class BioCanteen(Canteen):
     def __pop_item(self, lst, pool, weekday):
-        item_type = lst.pop()
-        item_name = lst.pop()
+        def single(lst):
+            fst = lst.pop()
+            maybe_weekday = re.match(r"(Uge.*) (.*) - (.*)", fst, flags=0)
+            if maybe_weekday:
+                lst.append(fst)
+                return ""
+            return fst
+
+        item_type = single(lst)
+        item_name = single(lst)
         pool.append(MenuItem(item_type[:-1], item_name, weekday, self.name))
 
     def fill_pool(self, pool):
@@ -91,9 +99,7 @@ class HumCanteen(Canteen):
         week_nr = datetime.date.today().isocalendar()[1]
         pdf_name = "HUM_Uge_{}.pdf".format(week_nr)
         content = self.__download_pdf(pdf_name)
-        print(content)
         replaced = re.sub("[\n\xa0\r]", "", content)
         item_names = list(re.match(self.__gen_regex(config.WEEKDAYS), replaced, flags=0).groups())
         for (weekday, item) in zip(config.WEEKDAYS, item_names):
             pool.append(MenuItem("Hovedret", item, weekday, self.name))
-

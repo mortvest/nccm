@@ -49,7 +49,11 @@ class BioCanteen(Canteen):
             return fst
 
         item_type = single(lst)
-        item_name = single(lst)
+        try:
+            item_name = single(lst)
+        except:
+            item_name = ""
+
         pool.append(MenuItem(item_type[:-1], item_name, weekday, self.name))
 
     def fill_pool(self, pool):

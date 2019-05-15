@@ -6,11 +6,11 @@ from canteen import *
 # TODO: Add logging (the proper way)
 # TODO: Add support for choosing canteens and days
 MAX_LINE = 80
-# CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
-#                 BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/"),
-#                 HumCanteen("HUM", "https://hum.ku.dk/kontakt/gaest/kantinen/menuer/2019/hum/")]
 CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
-                BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/")]
+                BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/"),
+                HumCanteen("HUM", "https://hum.ku.dk/kontakt/gaest/kantinen/menuer/2019/hum/")]
+# CANTEEN_LIST = [BioCanteen("Biocenter",    "http://www.biocenter.ku.dk/kantine/menuoversigt/"),
+#                 BioCanteen("August Krogh", "http://www1.bio.ku.dk/akb/kantine/menuoversigt/")]
 LOGO = ("""\
 
 ███╗   ██╗ ██████╗ ██████╗███╗   ███╗
